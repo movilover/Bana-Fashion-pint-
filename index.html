@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Bena Fashion - Label Printer</title>
+  <!-- JsBarcode Library -->
+  <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.5/dist/JsBarcode.all.min.js"></script>
+  <!-- QRCode Library -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+  <style>
+    :root {
+      --primary: #111827;
+      --bg: #f3f4f6;
+    }
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+    body {
+      background: var(--bg);
+      color: #333;
+      padding: 20px;
+    }
+    .container {
+      max-width: 1000px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+    }
+    @media (max-width: 768px) {
+      .container { grid-template-columns: 1fr; }
+    }
+    .card {
+      background: #fff;
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+    }
+    h2 {
+      margin-bottom: 15px;
+      color: var(--primary);
+      font-size: 1.2rem;
+      border-bottom: 2px solid #eee;
+      padding-bottom: 8px;
+    }
+    .form-group {
+      margin-bottom: 12px;
+    }
+    label {
+      display: block;
+      font-weight: 600;
+      font-size: 0.85rem;
+      margin-bottom: 4px;
+      color: #4b5563;
+    }
+    input, select, textarea {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid #d1d5db;
+      border-radius: 6px;
+      font-size: 0.9rem;
+    }
+    .row {
+      display: flex;
+      gap: 10px;
+    }
+    .row > div { flex: 1; }
+    
+    .btn {
+      width: 100%;
+      padding: 12px;
+      background: var(--primary);
+      color: white;
+      border: none;
+      border-radius: 6px;
+      font-weight: bold;
+      cursor: pointer;
+      margin-top: 10px;
+      font-size: 1rem;
+    }
+    .btn:hover { background: #000; }
+    
+    /* PREVIEW AREA */
+    .preview-box {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      background: #e5e7eb;
+      padding: 20px;
+      border-radius: 8px;
+    }
+    
+    /* STICKER STYLES (50mm x 40mm Ratio) */
+    .sticker {
+      width: 240px;
+      min-height: 280px;
+      background: white;
+      border: 1px solid #000;
+      padding: 10px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      position: relative;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    }
+    
+    .sticker-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 2px solid #000;
+      padding-bottom: 4px;
+    }
+    
+    .logo-svg {
+      width: 32px;
+      height: 32px;
+      fill: #000;
+    }
+    
+    .brand-title {
+      font-size: 14px;
+      font-weight: 900;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      text-align: right;
+    }
+    
+    .meta-info {
+      display: flex;
+      justify-content: space-between;
+      font-size: 9px;
+      font-weight: bold;
+      margin: 4px 0;
+      color: #000;
+    }
+    
+    .product-details {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: #f3f4f6;
+      padding: 4px 6px;
+      border-radius: 4px;
+      margin: 4px 0;
+      border: 1px solid #ddd;
+    }
+    .prod-name { font-size: 11px; font-weight: bold; }
+    .prod-size { font-size: 12px; font-weight: 900; background: #000; color: #fff; padding: 1px 6px; border-radius: 3px; }
+    
+    .customer-box {
+      border: 1px dashed #000;
+      padding: 4px;
+      font-size: 9px;
+      margin: 4px 0;
+      border-radius: 3px;
+    }
+    .customer-box strong { display: block; font-size: 10px; }
+    
+    .barcode-container {
+      text-align: center;
+      margin: 4px 0;
+    }
+    #barcode { width: 100%; max-height: 45px; }
+    #qrcode { display: flex; justify-content: center; margin: 4px 0; }
+    
+    .price-box {
+      background: #000;
+      color: #fff;
+      text-align: center;
+      padding: 6px;
+      font-size: 16px;
+      font-weight: 900;
+      border-radius: 4px;
+      letter-spacing: 0.5px;
+    }
+
+    /* PRINT STYLES */
+    @media print {
+      body * { visibility: hidden; }
+      #printArea, #printArea * { visibility: visible; }
+      #printArea {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100%;
+      }
+      .sticker {
+        width: 50mm;
+        height: 40mm;
+        page-break-after: always;
+        border: none;
+        box-shadow: none;
+        padding: 2mm;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <!-- CONTROL PANEL -->
+  <div class="card">
+    <h2>বেনা ফ্যাশন (BENA FASHION) - লেবেল প্যানেল</h2>
+    
+    <div class="row">
+      <div class="form-group">
+        <label>প্রোডাক্ট আইটেম (ছেলেদের)</label>
+        <select id="itemSelect" onchange="updateSticker()">
+          <option value="Panjabi">পাঞ্জাবি (Panjabi)</option>
+          <option value="T-Shirt">টি-শার্ট (T-Shirt)</option>
+          <option value="Shirt">শার্ট (Shirt)</option>
+          <option value="Polo Shirt">পোলো শার্ট (Polo Shirt)</option>
+          <option value="Jeans">জিন্স (Jeans)</option>
+          <option value="Trouser">ট্রাউজার (Trouser)</option>
+          <option value="Jacket">জ্যাকেট (Jacket)</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>সাইজ (Size)</label>
+        <select id="sizeSelect" onchange="updateSticker()">
+          <option value="M">M</option>
+          <option value="L" selected>L</option>
+          <option value="XL">XL</option>
+          <option value="XXL">XXL</option>
+          <option value="3XL">3XL</option>
+          <option value="S">S</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="form-group">
+        <label>মূল্য / প্রাইস (৳)</label>
+        <input type="number" id="priceInput" value="1290" oninput="updateSticker()">
+      </div>
+      <div class="form-group">
+        <label>কোড টাইপ</label>
+        <select id="codeType" onchange="toggleCodeType()">
+          <option value="BARCODE">বারকোড (1D Barcode)</option>
+          <option value="QR">কিউআর কোড (2D QR Code)</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label>কাস্টমারের নাম (ঐচ্ছিক)</label>
+      <input type="text" id="custName" placeholder="যেমন: আব্দুর রহমান" oninput="updateSticker()">
+    </div>
+    
+    <div class="form-group">
+      <label>কাস্টমারের ঠিকানা / ফোন (ঐচ্ছিক)</label>
+      <input type="text" id="custAddress" placeholder="যেমন: ঢাকা, ০১৭XXXXXXXX" oninput="updateSticker()">
+    </div>
+
+    <div class="row">
+      <div class="form-group">
+        <label>ইনভয়েস নং</label>
+        <input type="text" id="invNum" value="INV-0001" readonly>
+      </div>
+      <div class="form-group">
+        <label>বাল্ক প্রিন্ট সংখ্যা (১-৫০)</label>
+        <input type="number" id="printQty" value="1" min="1" max="50">
+      </div>
+    </div>
+
+    <button class="btn" onclick="triggerPrint()">🖨️ প্রিন্ট দিন (Print Label)</button>
+    <button class="btn" style="background:#4b5563;" onclick="resetSerial()">🔄 ইনভয়েস রিসেট করুন</button>
+  </div>
+
+  <!-- PREVIEW PANEL -->
+  <div class="card">
+    <h2>লেবেল প্রিভিউ (Sticker Preview)</h2>
+    <div class="preview-box">
+      <div class="sticker" id="stickerPreview">
+        
+        <!-- HEADER WITH LOGO -->
+        <div class="sticker-header">
+          <!-- Overlapping BF Monogram Logo -->
+          <svg class="logo-svg" viewBox="0 0 100 100">
+            <path d="M 20 10 H 65 C 80 10 80 40 65 40 H 40 V 90 H 20 Z M 40 25 V 30 H 60 C 65 30 65 25 60 25 Z" fill="#000"/>
+            <path d="M 35 45 H 70 C 85 45 85 70 70 70 H 50 V 90 H 35 Z M 50 55 V 60 H 65 C 70 60 70 55 65 55 Z" fill="#000" opacity="0.85"/>
+          </svg>
+          <div class="brand-title">BENA FASHION</div>
+        </div>
+
+        <!-- DATE & INVOICE -->
+        <div class="meta-info">
+          <span id="lblDate">DATE: --/--/----</span>
+          <span id="lblInv">INV-0001</span>
+        </div>
+
+        <!-- PRODUCT & SIZE -->
+        <div class="product-details">
+          <span class="prod-name" id="lblItem">Panjabi</span>
+          <span class="prod-size" id="lblSize">L</span>
+        </div>
+
+        <!-- DYNAMIC CUSTOMER INFO (Shown only if added) -->
+        <div class="customer-box" id="custBox" style="display: none;">
+          <strong id="lblCustName">Name: ---</strong>
+          <span id="lblCustAddr">Addr: ---</span>
+        </div>
+
+        <!-- BARCODE / QR CODE -->
+        <div class="barcode-container">
+          <svg id="barcode"></svg>
+          <div id="qrcode" style="display: none;"></div>
+        </div>
+
+        <!-- CLEAR PRICE TAG -->
+        <div class="price-box" id="lblPrice">
+          PRICE: ৳ 1290
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- HIDDEN PRINT CONTAINER -->
+<div id="printArea" style="display:none;"></div>
+
+<script>
+  let currentSerial = 1;
+
+  // Initialize Date and Counter
+  window.onload = function() {
+    const today = new Date();
+    const formattedDate = today.toLocaleDateString('en-GB');
+    document.getElementById('lblDate').innerText = 'DATE: ' + formattedDate;
+    updateSticker();
+  };
+
+  function updateSticker() {
+    const item = document.getElementById('itemSelect').value;
+    const size = document.getElementById('sizeSelect').value;
+    const price = document.getElementById('priceInput').value || '0';
+    const custName = document.getElementById('custName').value.trim();
+    const custAddr = document.getElementById('custAddress').value.trim();
+    const codeType = document.getElementById('codeType').value;
+
+    document.getElementById('lblItem').innerText = item;
+    document.getElementById('lblSize').innerText = size;
+    document.getElementById('lblPrice').innerText = 'PRICE: ৳ ' + price;
+
+    // Customer info toggle
+    const custBox = document.getElementById('custBox');
+    if (custName !== "" || custAddr !== "") {
+      custBox.style.display = "block";
+      document.getElementById('lblCustName').innerText = custName ? "Cust: " + custName : "";
+      document.getElementById('lblCustAddr').innerText = custAddr ? custAddr : "";
+    } else {
+      custBox.style.display = "none";
+    }
+
+    // Generate Code
+    const invCode = document.getElementById('invNum').value;
+    if (codeType === "BARCODE") {
+      document.getElementById('barcode').style.display = "block";
+      document.getElementById('qrcode').style.display = "none";
+      JsBarcode("#barcode", invCode, {
+        format: "CODE128",
+        height: 35,
+        fontSize: 10,
+        margin: 2
+      });
+    } else {
+      document.getElementById('barcode').style.display = "none";
+      const qrContainer = document.getElementById('qrcode');
+      qrContainer.style.display = "flex";
+      qrContainer.innerHTML = "";
+      new QRCode(qrContainer, {
+        text: invCode + " | " + item + " | " + price,
+        width: 55,
+        height: 55
+      });
+    }
+  }
+
+  function toggleCodeType() {
+    updateSticker();
+  }
+
+  function triggerPrint() {
+    const qty = parseInt(document.getElementById('printQty').value) || 1;
+    const printArea = document.getElementById('printArea');
+    printArea.innerHTML = "";
+    printArea.style.display = "block";
+
+    const baseSticker = document.getElementById('stickerPreview');
+
+    for (let i = 0; i < qty; i++) {
+      const clone = baseSticker.cloneNode(true);
+      const invStr = "INV-" + String(currentSerial).padStart(4, '0');
+      clone.querySelector('#lblInv').innerText = invStr;
+      
+      // Update Barcode on clone
+      const codeType = document.getElementById('codeType').value;
+      if(codeType === "BARCODE") {
+        const barcodeSvg = clone.querySelector('#barcode');
+        JsBarcode(barcodeSvg, invStr, { format: "CODE128", height: 35, fontSize: 10 });
+      }
+      
+      printArea.appendChild(clone);
+      currentSerial++;
+    }
+
+    // Update Next Invoice Number
+    document.getElementById('invNum').value = "INV-" + String(currentSerial).padStart(4, '0');
+    document.getElementById('lblInv').innerText = document.getElementById('invNum').value;
+    
+    window.print();
+
+    setTimeout(() => {
+      printArea.style.display = "none";
+      updateSticker();
+    }, 500);
+  }
+
+  function resetSerial() {
+    currentSerial = 1;
+    document.getElementById('invNum').value = "INV-0001";
+    document.getElementById('lblInv').innerText = "INV-0001";
+    updateSticker();
+  }
+</script>
+
+</body>
+</html>
