@@ -1,0 +1,31 @@
+name: Build Android APK
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout Repository
+      uses: actions/checkout@v4
+
+    - name: Set up Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18'
+
+    - name: Install Nativefier
+      run: npm install -g nativefier
+
+    - name: Generate APK App
+      run: |
+        nativefier --name "Bena Fashion" "https://movilover.github.io/Bana-Fashion-pint/" --platform android --arch arm64 --icon "" --out ./release-app
+
+    - name: Upload APK Artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: BenaFashion-APK
+        path: release-app/**/*.apk
