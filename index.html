@@ -1,622 +1,415 @@
 <!DOCTYPE html>
-<html lang="bn">
+<html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Bena Fashion - Label Printer</title>
-  <!-- JsBarcode Library -->
-  <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.5/dist/JsBarcode.all.min.js"></script>
-  <!-- QRCode Library -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
-  <style>
-    :root {
-      --primary: #4f46e5;
-      --primary-hover: #4338ca;
-      --bg: #f8fafc;
-      --card-bg: #ffffff;
-      --text: #1e293b;
-      --border: #cbd5e1;
-    }
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    }
-    body {
-      background: var(--bg);
-      color: var(--text);
-      padding: 20px;
-    }
-    .header-top {
-      max-width: 1000px;
-      margin: 0 auto 20px auto;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      background: var(--card-bg);
-      padding: 15px 20px;
-      border-radius: 12px;
-      box-shadow: 0 4px 6px rgba(0,0,0,0.02);
-    }
-    .header-top h1 {
-      font-size: 1.4rem;
-      color: var(--primary);
-    }
-    .history-btn {
-      background: #0f172a;
-      color: white;
-      border: none;
-      padding: 8px 16px;
-      border-radius: 8px;
-      cursor: pointer;
-      font-weight: 600;
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      transition: all 0.2s;
-    }
-    .history-btn:hover { background: #334155; transform: translateY(-1px); }
-
-    .container {
-      max-width: 1000px;
-      margin: 0 auto;
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 20px;
-    }
-    @media (max-width: 768px) {
-      .container { grid-template-columns: 1fr; }
-    }
-    .card {
-      background: var(--card-bg);
-      padding: 20px;
-      border-radius: 12px;
-      box-shadow: 0 4px 6px rgba(0,0,0,0.02);
-      border: 1px solid #e2e8f0;
-    }
-    h2 {
-      margin-bottom: 15px;
-      color: var(--text);
-      font-size: 1.1rem;
-      border-bottom: 2px solid #f1f5f9;
-      padding-bottom: 8px;
-    }
-    .form-group {
-      margin-bottom: 12px;
-    }
-    label {
-      display: block;
-      font-weight: 600;
-      font-size: 0.85rem;
-      margin-bottom: 4px;
-      color: #64748b;
-    }
-    input, select, textarea {
-      width: 100%;
-      padding: 10px;
-      border: 1px solid var(--border);
-      border-radius: 8px;
-      font-size: 0.9rem;
-      outline: none;
-      transition: border-color 0.2s;
-    }
-    input:focus, select:focus {
-      border-color: var(--primary);
-      box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
-    }
-    .row {
-      display: flex;
-      gap: 10px;
-    }
-    .row > div { flex: 1; }
-    
-    .btn {
-      width: 100%;
-      padding: 12px;
-      background: var(--primary);
-      color: white;
-      border: none;
-      border-radius: 8px;
-      font-weight: bold;
-      cursor: pointer;
-      margin-top: 10px;
-      font-size: 1rem;
-      transition: background 0.2s, transform 0.1s;
-    }
-    .btn:hover { background: var(--primary-hover); }
-    .btn:active { transform: scale(0.98); }
-    
-    /* PREVIEW AREA */
-    .preview-box {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      background: #f1f5f9;
-      padding: 20px;
-      border-radius: 8px;
-      border: 2px dashed #cbd5e1;
-    }
-    
-    /* STICKER STYLES (38.25mm Exact Ratio) */
-    .sticker {
-      width: 200px;
-      min-height: 180px;
-      background: white;
-      border: 1px solid #000;
-      padding: 6px;
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
-      position: relative;
-      box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1);
-    }
-    
-    .sticker-header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      border-bottom: 2px solid #000;
-      padding-bottom: 2px;
-    }
-    
-    .logo-svg {
-      width: 24px;
-      height: 24px;
-      fill: #000;
-    }
-    
-    .brand-title {
-      font-size: 11px;
-      font-weight: 900;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-      text-align: right;
-    }
-    
-    .meta-info {
-      display: flex;
-      justify-content: space-between;
-      font-size: 8px;
-      font-weight: bold;
-      margin: 2px 0;
-      color: #000;
-    }
-    
-    .product-details {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      background: #f8fafc;
-      padding: 2px 4px;
-      border-radius: 3px;
-      margin: 2px 0;
-      border: 1px solid #e2e8f0;
-    }
-    .prod-name { font-size: 10px; font-weight: bold; }
-    .prod-size { font-size: 10px; font-weight: 900; background: #000; color: #fff; padding: 1px 5px; border-radius: 3px; }
-    
-    .customer-box {
-      border: 1px dashed #000;
-      padding: 2px;
-      font-size: 8px;
-      margin: 2px 0;
-      border-radius: 2px;
-    }
-    .customer-box strong { display: block; font-size: 8.5px; }
-    
-    .barcode-container {
-      text-align: center;
-      margin: 2px 0;
-    }
-    #barcode { width: 100%; max-height: 32px; }
-    #qrcode { display: flex; justify-content: center; margin: 2px 0; }
-    
-    .price-box {
-      background: #000;
-      color: #fff;
-      text-align: center;
-      padding: 3px;
-      font-size: 12px;
-      font-weight: 900;
-      border-radius: 3px;
-      letter-spacing: 0.5px;
-    }
-
-    /* HISTORY MODAL */
-    .modal {
-      display: none;
-      position: fixed;
-      top: 0; left: 0; width: 100%; height: 100%;
-      background: rgba(0,0,0,0.5);
-      justify-content: center;
-      align-items: center;
-      z-index: 1000;
-    }
-    .modal-content {
-      background: white;
-      padding: 25px;
-      border-radius: 12px;
-      width: 90%;
-      max-width: 600px;
-      max-height: 80vh;
-      overflow-y: auto;
-      box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1);
-    }
-    .modal-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 15px;
-      border-bottom: 2px solid #f1f5f9;
-      padding-bottom: 10px;
-    }
-    .close-btn {
-      background: #ef4444;
-      color: white;
-      border: none;
-      padding: 5px 10px;
-      border-radius: 6px;
-      cursor: pointer;
-      font-weight: bold;
-    }
-    .history-item {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 10px;
-      border-bottom: 1px solid #f1f5f9;
-      font-size: 0.9rem;
-    }
-    .history-item:hover { background: #f8fafc; }
-
-    /* EXACT 38.25mm THERMAL PRINTER FIX */
-    @media print {
-      @page {
-        size: 38.25mm auto;
-        margin: 0;
-      }
-      body * { visibility: hidden; }
-      #printArea, #printArea * { visibility: visible; }
-      #printArea {
-        position: absolute;
-        left: 0;
-        top: 0;
-        width: 38.25mm;
-      }
-      .sticker {
-        width: 38.25mm;
-        page-break-after: always;
-        border: none;
-        box-shadow: none;
-        padding: 1mm;
-        margin: 0;
-      }
-    }
-  </style>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Bana</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 48 48'%3E%3Crect width='48' height='48' rx='14' fill='%230a5ad8'/%3E%3Cpath d='M18 12v24M18 12h8a6 6 0 0 1 0 12h-8M18 24h9a6 6 0 0 1 0 12h-9' fill='none' stroke='white' stroke-width='5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com/3.4.17"></script>
+<style>
+/* Design tokens: change the look here */
+:root{--bg:#f0f2f5;--surface:#fff;--ink:#1c1e21;--mute:#65676b;--line:#dddfe2;--soft:#f0f2f5;--brand:#1877f2;--on-brand:#fff;--green:#1877f2;--accent:#1877f2;--danger:#c0392b}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#18191a;--surface:#242526;--ink:#e4e6eb;--mute:#b0b3b8;--line:#3e4042;--soft:#3a3b3c;--accent:#4599ff}}
+:root[data-theme="dark"]{--bg:#18191a;--surface:#242526;--ink:#e4e6eb;--mute:#b0b3b8;--line:#3e4042;--soft:#3a3b3c;--accent:#4599ff}
+#auth{background:radial-gradient(900px 500px at 0% 0%,#5aaeff55,transparent),radial-gradient(800px 500px at 100% 100%,#ffc93c38,transparent),linear-gradient(160deg,#0a4fc4,#1877f2 55%,#4aa3ff)}
+.acard{background:#fff;color:#1c1e21;--mute:#65676b;--line:#dddfe2;--soft:#f0f2f5}
+.ainp{width:100%;background:#fff;color:#1c1e21;border:1.5px solid #dddfe2;border-radius:14px;padding:14px 16px;font-size:16px;outline:none}
+.ainp:focus{border-color:#1877f2;box-shadow:0 0 0 4px #1877f233}
+.spl{animation:splpop .9s cubic-bezier(.2,1.4,.4,1) both}@keyframes splpop{from{transform:scale(.4) rotate(-12deg);opacity:0}to{transform:none;opacity:1}}
+.bar{width:0;animation:barfill 1.7s ease-out forwards}@keyframes barfill{to{width:100%}}
+@media(prefers-reduced-motion:reduce){.spl{animation:none}}
+.rp{position:absolute;bottom:100%;left:0;display:none;gap:2px;padding:6px 8px;background:var(--surface);border:1px solid var(--line);border-radius:999px;box-shadow:0 6px 24px #0003;z-index:20}
+.rw:hover .rp,.rp.open{display:flex}
+.rp button{font-size:26px;line-height:1;padding:2px 4px;border-radius:50%;transition:transform .15s}
+.rp button:hover{transform:scale(1.35) translateY(-4px)}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:"Plus Jakarta Sans",system-ui,-apple-system,"Segoe UI",sans-serif;font-size:15px;padding-bottom:84px}
+@media(min-width:768px){body{padding-bottom:0}}
+svg.i{width:1em;height:1em;fill:currentColor;fill-opacity:.12;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;flex:none}
+svg.i.solid{fill-opacity:1}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:20px}
+.mute{color:var(--mute)}
+.field{background:var(--soft);border-radius:999px;padding:10px 16px;outline:none;color:var(--ink);min-width:0;border:1px solid transparent}
+.field:focus{border-color:var(--accent)}
+button:focus-visible,a:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;border-radius:999px;padding:9px 16px;font-weight:600;font-size:14px;transition:background .15s}
+.ghost{color:var(--mute)}.ghost:hover{background:var(--soft);color:var(--ink)}
+.brand{background:var(--brand);color:var(--on-brand)}
+.brand:hover{filter:brightness(.95)}
+.act{flex:1;display:flex;align-items:center;justify-content:center;gap:8px;padding:9px;border-radius:999px;font-weight:600;font-size:14px;color:var(--mute)}
+.act:hover{background:var(--soft);color:var(--ink)}
+.act.on{font-weight:700}
+.act.on svg{fill-opacity:1}
+.tabs{display:flex;gap:4px;background:var(--soft);padding:4px;border-radius:999px}
+.tab{display:flex;align-items:center;gap:8px;padding:8px 16px;border-radius:999px;font-weight:600;font-size:14px;color:var(--mute)}
+.tab:hover{color:var(--ink)}
+.tab[aria-current="page"]{background:var(--brand);color:var(--on-brand)}
+.nav-ic{display:grid;place-items:center;width:36px;height:36px;border-radius:12px;font-size:20px}
+.av{display:grid;place-items:center;border-radius:50%;font-weight:700;color:#fff;flex:none}
+.view{display:none}.view.active{display:block}
+.pop{animation:pop .3s cubic-bezier(.3,1.8,.5,1)}
+@keyframes pop{50%{transform:scale(1.18)}}
+.snap{scroll-snap-type:y mandatory;overflow-y:auto;height:calc(100dvh - 130px);max-width:380px;margin:0 auto}
+.snap>div{scroll-snap-align:start;height:100%;margin-bottom:12px;border-radius:20px;overflow:hidden;background:#000;position:relative}
+.chat{width:320px;height:410px}
+@media(max-width:640px){.chat{width:calc(100vw - 16px);height:60dvh}}
+.toast{position:fixed;left:50%;bottom:96px;transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:10px 16px;border-radius:999px;font-size:14px;z-index:90}
+@media(prefers-reduced-motion:reduce){.pop{animation:none}}
+</style>
 </head>
 <body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs><linearGradient id="lg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#3b9cff"/><stop offset="1" stop-color="#0a5ad8"/></linearGradient></defs><symbol id="logo" viewBox="0 0 48 48"><rect width="48" height="48" rx="14" fill="url(#lg)"/><path d="M18 12v24M18 12h8a6 6 0 0 1 0 12h-8M18 24h9a6 6 0 0 1 0 12h-9" fill="none" stroke="#fff" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/><circle cx="37" cy="11" r="3.6" fill="#ffc93c"/></symbol></svg>
+<div id="splash" class="fixed inset-0 z-[200] grid place-items-center transition-opacity duration-500" style="background:linear-gradient(160deg,#0a4fc4,#1877f2 60%,#4aa3ff)"><div class="flex flex-col items-center text-white"><svg class="spl h-24 w-24 drop-shadow-lg" viewBox="0 0 48 48"><use href="#logo"/></svg><div class="mt-4 text-4xl font-extrabold tracking-tight">bana</div><div class="mt-6 h-1 w-40 overflow-hidden rounded-full" style="background:#ffffff40"><i class="bar block h-full rounded-full bg-white"></i></div></div></div>
 
-<div class="header-top">
-  <h1>✨ বেনা ফ্যাশন (প্রিন্টিং সিস্টেম)</h1>
-  <button class="history-btn" onclick="playSound(); openHistoryModal()">📊 ইনভয়েস হিস্টরি (৭ দিন)</button>
-</div>
-
-<div class="container">
-  <!-- CONTROL PANEL -->
-  <div class="card">
-    <h2>লেবেল কনফিগারেশন</h2>
-    
-    <div class="row">
-      <div class="form-group">
-        <label>প্রোডাক্ট আইটেম</label>
-        <select id="itemSelect" onchange="playSound(); updateSticker()">
-          <option value="Panjabi">পাঞ্জাবি (Panjabi)</option>
-          <option value="T-Shirt">টি-শার্ট (T-Shirt)</option>
-          <option value="Shirt">শার্ট (Shirt)</option>
-          <option value="Polo Shirt">পোলো শার্ট (Polo Shirt)</option>
-          <option value="Jeans">জিন্স (Jeans)</option>
-          <option value="Trouser">ট্রাউজার (Trouser)</option>
-          <option value="Jacket">জ্যাকেট (Jacket)</option>
-        </select>
-      </div>
-      <div class="form-group">
-        <label>সাইজ (Size)</label>
-        <select id="sizeSelect" onchange="playSound(); updateSticker()">
-          <option value="M">M</option>
-          <option value="L" selected>L</option>
-          <option value="XL">XL</option>
-          <option value="XXL">XXL</option>
-          <option value="3XL">3XL</option>
-          <option value="S">S</option>
-        </select>
-      </div>
-    </div>
-
-    <div class="row">
-      <div class="form-group">
-        <label>মূল্য / প্রাইস (৳)</label>
-        <input type="number" id="priceInput" value="1290" oninput="updateSticker()">
-      </div>
-      <div class="form-group">
-        <label>কোড টাইপ</label>
-        <select id="codeType" onchange="playSound(); toggleCodeType()">
-          <option value="BARCODE">বারকোড (1D Barcode)</option>
-          <option value="QR">কিউআর কোড (2D QR Code)</option>
-        </select>
-      </div>
-    </div>
-
-    <div class="form-group">
-      <label>কাস্টমারের নাম (ঐচ্ছিক)</label>
-      <input type="text" id="custName" placeholder="যেমন: আব্দুর রহমান" oninput="updateSticker()">
-    </div>
-    
-    <div class="form-group">
-      <label>কাস্টমারের ঠিকানা / ফোন (ঐচ্ছিক)</label>
-      <input type="text" id="custAddress" placeholder="যেমন: ঢাকা, ০১৭XXXXXXXX" oninput="updateSticker()">
-    </div>
-
-    <div class="row">
-      <div class="form-group">
-        <label>ইনভয়েস নং</label>
-        <input type="text" id="invNum" value="INV-0001" readonly>
-      </div>
-      <div class="form-group">
-        <label>বাল্ক প্রিন্ট সংখ্যা (১-৫০)</label>
-        <input type="number" id="printQty" value="1" min="1" max="50">
-      </div>
-    </div>
-
-    <button class="btn" onclick="playSound(); triggerPrint()">🖨️ প্রিন্ট দিন (Print Label)</button>
-    <button class="btn" style="background:#64748b;" onclick="playSound(); resetSerial()">🔄 ইনভয়েস রিসেট করুন</button>
-  </div>
-
-  <!-- PREVIEW PANEL -->
-  <div class="card">
-    <h2>লেবেল প্রিভিউ (38.25mm)</h2>
-    <div class="preview-box">
-      <div class="sticker" id="stickerPreview">
-        
-        <!-- HEADER WITH PREMIUM SVG MONOGRAM -->
-        <div class="sticker-header">
-          <svg class="logo-svg" viewBox="0 0 100 100">
-            <path d="M 20 10 H 65 C 80 10 80 40 65 40 H 40 V 90 H 20 Z M 40 25 V 30 H 60 C 65 30 65 25 60 25 Z" fill="#000"/>
-            <path d="M 35 45 H 70 C 85 45 85 70 70 70 H 50 V 90 H 35 Z M 50 55 V 60 H 65 C 70 60 70 55 65 55 Z" fill="#000" opacity="0.85"/>
-          </svg>
-          <div class="brand-title">BENA FASHION</div>
-        </div>
-
-        <!-- DATE & INVOICE -->
-        <div class="meta-info">
-          <span id="lblDate">DATE: --/--/----</span>
-          <span id="lblInv">INV-0001</span>
-        </div>
-
-        <!-- PRODUCT & SIZE -->
-        <div class="product-details">
-          <span class="prod-name" id="lblItem">Panjabi</span>
-          <span class="prod-size" id="lblSize">L</span>
-        </div>
-
-        <!-- CUSTOMER INFO -->
-        <div class="customer-box" id="custBox" style="display: none;">
-          <strong id="lblCustName">Name: ---</strong>
-          <span id="lblCustAddr">Addr: ---</span>
-        </div>
-
-        <!-- BARCODE / QR CODE -->
-        <div class="barcode-container">
-          <svg id="barcode"></svg>
-          <div id="qrcode" style="display: none;"></div>
-        </div>
-
-        <!-- PRICE TAG -->
-        <div class="price-box" id="lblPrice">
-          PRICE: ৳ 1290
-        </div>
-
-      </div>
-    </div>
+<!-- Auth screen -->
+<div id="auth" class="fixed inset-0 z-[100] overflow-auto">
+  <div class="mx-auto flex min-h-full w-full max-w-[480px] flex-col items-center justify-center px-5 py-8">
+    <div class="mb-6 flex flex-col items-center text-white"><svg class="h-20 w-20 drop-shadow-lg" viewBox="0 0 48 48"><use href="#logo"/></svg><div class="mt-3 text-4xl font-extrabold tracking-tight">bana</div><div class="mt-1 text-sm opacity-90">ব্যানা · Connect, share and watch with friends</div></div>
+    <form id="authForm" class="acard w-full space-y-4 rounded-[28px] p-7 shadow-2xl" novalidate>
+      <div><h1 id="aTitle" class="text-2xl font-extrabold">Welcome back</h1><p id="aSub" class="mute mt-1 text-sm"></p></div>
+      <div id="aTabs" class="tabs"><button type="button" class="tab flex-1 justify-center" data-mode="in" aria-current="page">Log in</button><button type="button" class="tab flex-1 justify-center" data-mode="up">Sign up</button></div>
+      <div data-s="1"><div class="grid grid-cols-1 gap-3 sm:grid-cols-2"><input id="aFirst" class="ainp" placeholder="First name" aria-label="First name" autocomplete="given-name"><input id="aLast" class="ainp" placeholder="Last name" aria-label="Last name" autocomplete="family-name"></div></div>
+      <div data-s="2" class="space-y-2"><div class="mute text-[13px] font-semibold">Birthday</div><div class="grid grid-cols-3 gap-2"><select id="aD" class="ainp" aria-label="Day"></select><select id="aM" class="ainp" aria-label="Month"></select><select id="aY" class="ainp" aria-label="Year"></select></div><div class="mute pt-1 text-[13px] font-semibold">Gender</div><select id="aG" class="ainp" aria-label="Gender"><option value="">Select</option><option>Female</option><option>Male</option><option>Custom</option></select></div>
+      <div data-s="in 3 reset"><input id="aEmail" type="email" class="ainp" placeholder="Email address" aria-label="Email" autocomplete="email"></div>
+      <div data-s="in 3"><input id="aPass" type="password" class="ainp" placeholder="Password (6+ characters)" aria-label="Password" autocomplete="current-password"></div>
+      <div data-s="in" class="text-right"><button type="button" id="aForgot" class="text-sm font-semibold" style="color:#1877f2">Forgot password?</button></div>
+      <p id="aErr" class="min-h-[20px] text-sm" style="color:var(--danger)" role="alert"></p>
+      <div class="flex gap-2"><button type="button" id="aBack" class="btn" style="border:1px solid var(--line)">Back</button><button id="aGo" class="btn brand flex-1 !py-3.5 text-base">Log in</button></div>
+    </form>
+    <p class="mt-5 text-center text-xs text-white opacity-80">By continuing you agree to Bana’s terms and privacy policy.</p>
   </div>
 </div>
 
-<!-- HISTORY MODAL -->
-<div class="modal" id="historyModal">
-  <div class="modal-content">
-    <div class="modal-header">
-      <h3>📜 বিগত ৭ দিনের ইনভয়েস হিস্টরি</h3>
-      <button class="close-btn" onclick="closeHistoryModal()">✕ বন্ধ</button>
+<header class="sticky top-0 z-50" style="background:color-mix(in srgb,var(--surface) 92%,transparent);backdrop-filter:blur(10px);border-bottom:1px solid var(--line);padding-top:env(safe-area-inset-top,0px)">
+  <div class="mx-auto flex h-16 max-w-[1360px] items-center gap-3 px-3 md:grid md:grid-cols-[1fr_auto_1fr]">
+    <div class="flex min-w-0 flex-1 items-center gap-3">
+      <a href="#feed" class="flex items-center gap-2 text-xl font-extrabold" aria-label="Bana home"><svg class="h-10 w-10" viewBox="0 0 48 48"><use href="#logo"/></svg><span class="hidden text-[22px] tracking-tight lg:inline" style="color:var(--accent)">bana</span></a>
+      <label class="field flex w-full max-w-[250px] items-center gap-2 mute"><span id="icS" class="flex"></span><input id="search" type="search" placeholder="Search posts and people" aria-label="Search" class="w-full bg-transparent outline-none" style="color:var(--ink)"></label>
     </div>
-    <div id="historyList">
-      <!-- History items will load here -->
-    </div>
+    <nav id="tabs" class="tabs hidden md:flex" aria-label="Main"></nav>
+    <div class="flex items-center justify-end gap-1" id="hdrR"></div>
   </div>
-</div>
+</header>
 
-<!-- HIDDEN PRINT CONTAINER -->
-<div id="printArea" style="display:none;"></div>
+<main class="mx-auto grid max-w-[1360px] justify-center gap-5 px-3 py-5 lg:grid-cols-[270px_minmax(0,660px)_280px]">
+  <aside class="sticky top-[84px] hidden space-y-3 self-start lg:block" id="left"></aside>
+  <section class="min-w-0">
+    <div id="view-feed" class="view active space-y-4"></div>
+    <div id="view-reels" class="view"></div>
+    <div id="view-watch" class="view"></div>
+    <div id="view-shop" class="view"></div>
+    <div id="view-messenger" class="view"></div>
+  </section>
+  <aside class="sticky top-[84px] hidden space-y-3 self-start lg:block" id="right"></aside>
+</main>
 
-<script>
-  let currentSerial = 1;
+<nav id="dock" class="fixed inset-x-3 bottom-3 z-50 md:hidden" style="margin-bottom:env(safe-area-inset-bottom,0px)" aria-label="Main mobile"></nav>
+<div id="chats" class="fixed bottom-0 right-2 z-[55] flex items-end gap-3"></div>
+<div id="toast" class="toast" hidden></div>
 
-  // Web Audio API for Button Click Sound
-  function playSound() {
-    try {
-      const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-      const osc = audioCtx.createOscillator();
-      const gainNode = audioCtx.createGain();
-      osc.type = 'sine';
-      osc.frequency.setValueAtTime(600, audioCtx.currentTime);
-      osc.frequency.exponentialRampToValueAtTime(200, audioCtx.currentTime + 0.05);
-      gainNode.gain.setValueAtTime(0.1, audioCtx.currentTime);
-      gainNode.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.05);
-      osc.connect(gainNode);
-      gainNode.connect(audioCtx.destination);
-      osc.start();
-      osc.stop(audioCtx.currentTime + 0.05);
-    } catch(e) {}
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { getAuth, onAuthStateChanged, createUserWithEmailAndPassword, signInWithEmailAndPassword, sendPasswordResetEmail, updateProfile, signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+import { getFirestore, collection, doc, setDoc, addDoc, updateDoc, deleteDoc, query, orderBy, limit, onSnapshot, serverTimestamp, arrayUnion, arrayRemove, increment, deleteField } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import { getStorage, ref, uploadBytesResumable, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-storage.js";
+
+const app = initializeApp({
+  apiKey: "AIzaSyCARq_SZRWktj5st9xyUTyVEl5LcGl0HqY",
+  authDomain: "bana-a5770.firebaseapp.com",
+  projectId: "bana-a5770",
+  storageBucket: "bana-a5770.firebasestorage.app",
+  messagingSenderId: "374199401810",
+  appId: "1:374199401810:web:ad0470c40d6703b936ce8b"
+});
+const auth = getAuth(app), db = getFirestore(app), storage = getStorage(app);
+
+/* Media service: swap this one function for Cloudinary later
+   (POST to your Cloudinary upload preset, return { url, type }). */
+const Media = {
+  async upload(file, onProgress) {
+    const r = ref(storage, `posts/${me.uid}/${Date.now()}_${file.name.replace(/[^\w.]/g, "_")}`);
+    const task = uploadBytesResumable(r, file);
+    await new Promise((res, rej) => task.on("state_changed", s => onProgress(s.bytesTransferred / s.totalBytes), rej, res));
+    return { url: await getDownloadURL(r), type: file.type.startsWith("video") ? "video" : "image" };
   }
+};
 
-  // Initialize Date and LocalStorage History Cleanup (7 Days)
-  window.onload = function() {
-    const today = new Date();
-    const formattedDate = today.toLocaleDateString('en-GB');
-    document.getElementById('lblDate').innerText = 'DATE: ' + formattedDate;
-    
-    const savedSerial = localStorage.getItem('bena_last_serial');
-    if(savedSerial) {
-      currentSerial = parseInt(savedSerial);
-      document.getElementById('invNum').value = "INV-" + String(currentSerial).padStart(4, '0');
-    }
-    
-    cleanOldHistory();
-    updateSticker();
+/* ---------- helpers ---------- */
+const P = {
+home:"M4 11l8-7 8 7v8a1 1 0 0 1-1 1h-4v-6H9v6H5a1 1 0 0 1-1-1z",
+reels:"M5 4h14a1 1 0 0 1 1 1v14a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V5a1 1 0 0 1 1-1z M10 9.5v5l4.2-2.5z",
+watch:"M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18z M10 8.8v6.4l5.2-3.2z",
+shop:"M5 8h14l-1 12H6z M9 8V7a3 3 0 0 1 6 0v1",
+msg:"M4 6a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2h-6l-4 3v-3H6a2 2 0 0 1-2-2z",
+bell:"M6 17v-6a6 6 0 0 1 12 0v6l1.5 2h-15z M10 21h4",
+search:"M11 18a7 7 0 1 0 0-14 7 7 0 0 0 0 14z M20 20l-4-4",
+heart:"M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.6-7 10-7 10z",
+comment:"M20 12a8 8 0 0 1-11.5 7.2L4 20l1-4A8 8 0 1 1 20 12z",
+share:"M5 12h13 M13 6l6 6-6 6",
+coin:"M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18z M12 16a4 4 0 1 0 0-8 4 4 0 0 0 0 8z",
+image:"M4 5h16a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V6a1 1 0 0 1 1-1z M3 16l5-5 4 4 3-3 6 6 M8.5 9.5h.01",
+video:"M3 7a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z M15 10l6-3v10l-6-3",
+x:"M6 6l12 12 M18 6L6 18",
+send:"M21 3L3 11l7 3 3 7z M10 14l11-11",
+out:"M9 4H5v16h4 M16 8l4 4-4 4 M20 12H9",
+like:"M7 11v9H4v-9z M7 11l4-7a2 2 0 0 1 2 2v4h5.5a1.5 1.5 0 0 1 1.5 1.8l-1.3 6.5a2 2 0 0 1-2 1.7H7",
+moon:"M20 13.5A8.5 8.5 0 1 1 10.5 4 7 7 0 0 0 20 13.5z"
+};
+const ic = (n, c = "") => `<svg class="i ${c}" viewBox="0 0 24 24" aria-hidden="true">${P[n].split(" M").map((d, k) => `<path d="${k ? "M" : ""}${d}"/>`).join("")}</svg>`;
+const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const $ = s => document.querySelector(s);
+const hue = s => [...s].reduce((a, c) => a + c.charCodeAt(0) * 7, 0) % 360;
+const initials = n => n.split(/\s+/).map(w => w[0]).slice(0, 2).join("").toUpperCase();
+const av = (name, s = 40) => `<span class="av" style="width:${s}px;height:${s}px;font-size:${s * .38}px;background:hsl(${hue(name)} 42% 36%)">${esc(initials(name))}</span>`;
+const ago = t => { const s = (Date.now() - t) / 1000; return s < 60 ? "Just now" : s < 3600 ? Math.floor(s / 60) + "m" : s < 86400 ? Math.floor(s / 3600) + "h" : Math.floor(s / 86400) + "d"; };
+const toast = m => { const t = $("#toast"); t.textContent = m; t.hidden = false; clearTimeout(toast.k); toast.k = setTimeout(() => t.hidden = true, 2600); };
+const TABS = [["feed", "Home", "home"], ["reels", "Reels", "reels"], ["watch", "Watch", "watch"], ["shop", "Shop", "shop"], ["messenger", "Messages", "msg"]];
+const SHOP = [["Hand-thrown mug", 18, "#ffc93c,#ff9a56"], ["Linen tote bag", 24, "#a8e6cf,#2fb67c"], ["Risograph print", 32, "#f4a6c8,#ffc93c"], ["Pocket tripod", 15, "#9ad7f5,#4361ee"]];
+
+let me = null, pendingName = "", posts = [], people = [], unsubs = [], cUnsubs = {}, chats = [], tab = "feed", q = "", draftFile = null, cart = 0, vidKey = "", hb, reelObs, lpAt = 0, lpT;
+
+/* ---------- auth ---------- */
+let mode = "in", step = 1;
+const splashT = Date.now();
+function hideSplash() { const e = $("#splash"); if (!e || e.dataset.go) return; e.dataset.go = 1; setTimeout(() => { e.style.opacity = 0; setTimeout(() => e.remove(), 500); }, Math.max(0, 1800 - (Date.now() - splashT))); }
+setTimeout(hideSplash, 6000);
+const AERR = { "auth/invalid-credential": "Wrong email or password.", "auth/email-already-in-use": "That email already has an account. Log in instead.", "auth/weak-password": "Use at least 6 characters.", "auth/invalid-email": "Check the email address.", "auth/too-many-requests": "Too many attempts. Try again in a few minutes.", "auth/network-request-failed": "No connection. Check your internet and try again.", "auth/operation-not-allowed": "Turn on Email/Password in Firebase → Authentication → Sign-in method." };
+const T = { in: ["Welcome back", "Log in to continue to Bana."], 1: ["Create your account", "Step 1 of 3 · What’s your name?"], 2: ["About you", "Step 2 of 3 · Birthday and gender"], 3: ["Almost done", "Step 3 of 3 · Email and password"], reset: ["Reset your password", "Enter your email and we’ll send you a reset link."] };
+const yr = new Date().getFullYear(), aerr = (m, ok) => { const e = $("#aErr"); e.textContent = m; e.style.color = ok ? "#1e9e68" : "var(--danger)"; };
+$("#aD").innerHTML = `<option value="">Day</option>` + Array.from({ length: 31 }, (_, i) => `<option>${i + 1}</option>`).join("");
+$("#aM").innerHTML = `<option value="">Month</option>` + "Jan Feb Mar Apr May Jun Jul Aug Sep Oct Nov Dec".split(" ").map((m, i) => `<option value="${i + 1}">${m}</option>`).join("");
+$("#aY").innerHTML = `<option value="">Year</option>` + Array.from({ length: 110 }, (_, i) => `<option>${yr - i}</option>`).join("");
+function showAuth() {
+  const k = mode === "up" ? String(step) : mode;
+  document.querySelectorAll("[data-s]").forEach(e => e.style.display = e.dataset.s.split(" ").includes(k) ? "" : "none");
+  $("#aTabs").style.display = mode === "reset" ? "none" : "";
+  $("#aBack").style.display = (mode === "up" && step > 1) || mode === "reset" ? "" : "none";
+  $("#aBack").textContent = mode === "reset" ? "Back to log in" : "Back";
+  $("#aGo").textContent = mode === "in" ? "Log in" : mode === "reset" ? "Send reset link" : step < 3 ? "Next" : "Create account";
+  $("#aTitle").textContent = T[k][0]; $("#aSub").textContent = T[k][1];
+  $("#aPass").autocomplete = mode === "in" ? "current-password" : "new-password"; aerr("");
+}
+function setMode(m) {
+  mode = m; step = 1;
+  document.querySelectorAll("[data-mode]").forEach(x => x.dataset.mode === m ? x.setAttribute("aria-current", "page") : x.removeAttribute("aria-current"));
+  showAuth();
+}
+document.querySelectorAll("[data-mode]").forEach(b => b.onclick = () => setMode(b.dataset.mode));
+$("#aForgot").onclick = () => setMode("reset");
+$("#aBack").onclick = () => mode === "reset" ? setMode("in") : (step--, showAuth());
+$("#authForm").onsubmit = async e => {
+  e.preventDefault(); const err = aerr, v = id => $(id).value.trim(); err("");
+  if (mode === "up" && step === 1) { if (!v("#aFirst") || !v("#aLast")) return err("Enter your first and last name."); step = 2; return showAuth(); }
+  if (mode === "up" && step === 2) {
+    if (!v("#aD") || !v("#aM") || !v("#aY")) return err("Select your birthday.");
+    if (yr - v("#aY") < 13) return err("You must be at least 13 to join.");
+    if (!v("#aG")) return err("Select your gender."); step = 3; return showAuth();
+  }
+  const email = v("#aEmail"), pw = $("#aPass").value, b = $("#aGo");
+  if (!email) return err("Enter your email.");
+  if (mode === "reset") {
+    b.disabled = true;
+    try { await sendPasswordResetEmail(auth, email); err("If an account exists for that email, a reset link is on its way. Check your inbox and spam folder.", true); } catch (x) { err(AERR[x.code] ?? x.code); }
+    b.disabled = false; return;
+  }
+  if (pw.length < 6) return err("Use at least 6 characters.");
+  b.disabled = true;
+  try {
+    if (mode === "up") {
+      const first = v("#aFirst"), last = v("#aLast"); pendingName = `${first} ${last}`;
+      const c = await createUserWithEmailAndPassword(auth, email, pw);
+      await updateProfile(c.user, { displayName: pendingName });
+      await setDoc(doc(db, "users", c.user.uid), { name: pendingName, first, last, dob: `${v("#aY")}-${v("#aM")}-${v("#aD")}`, gender: v("#aG"), createdAt: serverTimestamp() }, { merge: true });
+    } else await signInWithEmailAndPassword(auth, email, pw);
+  } catch (x) { err(AERR[x.code] ?? x.code); }
+  b.disabled = false;
+};
+showAuth();
+
+onAuthStateChanged(auth, u => {
+  stopAll(); hideSplash();
+  if (!u) { $("#auth").hidden = false; return; }
+  me = { uid: u.uid, name: u.displayName || pendingName || u.email.split("@")[0] };
+  $("#auth").hidden = true; boot();
+});
+function stopAll() { unsubs.forEach(f => f()); unsubs = []; Object.values(cUnsubs).forEach(f => f()); cUnsubs = {}; chats.forEach(c => c.unsub()); chats = []; clearInterval(hb); posts = []; vidKey = ""; }
+
+const touch = () => setDoc(doc(db, "users", me.uid), { name: me.name, lastSeen: serverTimestamp() }, { merge: true });
+
+/* ---------- boot ---------- */
+function boot() {
+  touch(); hb = setInterval(touch, 60000);
+  renderShell(); renderFeedShell(); renderShop(); setTab(location.hash.slice(1) || "feed");
+  unsubs.push(onSnapshot(query(collection(db, "posts"), orderBy("createdAt", "desc"), limit(40)),
+    s => { posts = s.docs.map(d => ({ id: d.id, ...d.data({ serverTimestamps: "estimate" }) })); syncFeed(); syncVideos(); renderEarned(); },
+    e => toast("Could not load posts: " + e.code)));
+  unsubs.push(onSnapshot(query(collection(db, "users"), orderBy("lastSeen", "desc"), limit(20)),
+    s => { people = s.docs.map(d => ({ uid: d.id, ...d.data({ serverTimestamps: "estimate" }) })).filter(p => p.uid !== me.uid); renderPeople(); }));
+  setInterval(renderPeople, 60000);
+}
+
+/* ---------- shell ---------- */
+function renderShell() {
+  $("#icS").innerHTML = ic("search");
+  $("#hdrR").innerHTML = `<span class="btn hidden sm:inline-flex" style="background:var(--soft)" title="Tips earned on your posts">${ic("coin", "text-lg")}<b class="earned">0</b></span>
+    <button class="btn ghost !px-3 text-xl" data-act="theme" aria-label="Toggle dark mode">${ic("moon")}</button>
+    <button class="btn ghost !px-3 text-xl" data-act="soon" aria-label="Notifications">${ic("bell")}</button>
+    <button class="btn ghost !px-3 text-xl" data-act="logout" aria-label="Log out" title="Log out">${ic("out")}</button>`;
+  const tint = ["#ffe39a", "#bfe8cf", "#f6c6d8", "#bfe0f5", "#ffd9b0"];
+  $("#left").innerHTML = `<div class="card p-4"><div class="flex items-center gap-3">${av(me.name, 48)}<div class="min-w-0"><b class="block truncate">${esc(me.name)}</b><span class="mute text-[13px]">My profile</span></div></div></div>
+    <div class="card p-4"><div class="mute text-[13px]">Tips earned</div><div class="mt-1 flex items-center gap-2 text-3xl font-extrabold">${ic("coin", "text-[28px]")}<span class="earned">0</span></div><p class="mute mt-1 text-[13px]">Payouts open with the wallet update.</p></div>
+    <div class="card p-2">${TABS.map((t, i) => `<a href="#${t[0]}" class="flex items-center gap-3 rounded-2xl p-2 font-semibold hover:bg-[var(--soft)]"><span class="nav-ic" style="background:${tint[i]};color:#17382a">${ic(t[2])}</span>${t[1]}</a>`).join("")}</div>`;
+  $("#right").innerHTML = `<div class="card p-4"><b>Picked for you</b>${SHOP.slice(0, 2).map(p => `<a href="#shop" class="mt-3 flex items-center gap-3"><span class="h-14 w-14 flex-none rounded-2xl" style="background:linear-gradient(135deg,${p[2]})"></span><span><b class="block">${p[0]}</b><span class="mute text-sm">$${p[1]}</span></span></a>`).join("")}</div>
+    <div class="card p-3"><b class="block px-1 pb-1">People</b><div class="people"></div></div>`;
+}
+const online = p => p.lastSeen && Date.now() - (p.lastSeen.toMillis?.() ?? 0) < 150000;
+function renderPeople() {
+  const html = people.length ? people.map(p => `<button class="flex w-full items-center gap-3 rounded-2xl p-2 text-left hover:bg-[var(--soft)]" data-act="chat" data-uid="${p.uid}"><span class="relative">${av(p.name, 38)}<i class="absolute -bottom-0.5 -right-0.5 h-3 w-3 rounded-full border-2" style="border-color:var(--surface);background:${online(p) ? "#2fb67c" : "#9aa89f"}"></i></span><span class="min-w-0"><b class="block truncate">${esc(p.name)}</b><span class="mute text-xs">${online(p) ? "Online" : "Offline"}</span></span></button>`).join("")
+    : `<p class="mute p-2 text-sm">No one else has joined yet. Invite a friend to sign up.</p>`;
+  document.querySelectorAll(".people").forEach(e => e.innerHTML = html);
+  $("#view-messenger").innerHTML = `<div class="mx-auto max-w-[660px]"><h2 class="mb-3 text-2xl font-extrabold">Messages</h2><div class="card p-2">${html}</div></div>`;
+}
+function renderEarned() { const n = posts.filter(p => p.uid === me.uid).reduce((a, p) => a + (p.tips || 0), 0); document.querySelectorAll(".earned").forEach(e => e.textContent = n); }
+
+function setTab(id) {
+  if (!TABS.some(t => t[0] === id)) id = "feed";
+  tab = id;
+  document.querySelectorAll(".view").forEach(v => v.classList.toggle("active", v.id === "view-" + id));
+  $("#tabs").innerHTML = TABS.map(t => `<a href="#${t[0]}" class="tab" ${tab === t[0] ? 'aria-current="page"' : ""}>${ic(t[2], "text-xl")}<span class="hidden lg:inline">${t[1]}</span></a>`).join("");
+  $("#dock").innerHTML = `<div class="tabs justify-around shadow-lg" style="background:var(--surface);border:1px solid var(--line)">${TABS.map(t => `<a href="#${t[0]}" class="tab !px-4 text-xl" aria-label="${t[1]}" ${tab === t[0] ? 'aria-current="page"' : ""}>${ic(t[2], "text-2xl")}</a>`).join("")}</div>`;
+  window.scrollTo({ top: 0 });
+}
+addEventListener("hashchange", () => me && setTab(location.hash.slice(1)));
+
+/* ---------- feed ---------- */
+function renderFeedShell() {
+  $("#view-feed").innerHTML = `<div class="card p-4">
+    <div class="flex gap-3">${av(me.name, 42)}<textarea id="draft" rows="2" class="field w-full resize-none !rounded-2xl" placeholder="Share something, ${esc(me.name.split(" ")[0])}" aria-label="Create post"></textarea></div>
+    <div id="prev" class="mt-3"></div>
+    <div class="mt-3 flex items-center justify-between gap-2">
+      <label class="btn ghost cursor-pointer"><span class="flex text-xl" style="color:var(--accent)">${ic("image")}</span>Photo or video<input id="file" type="file" accept="image/*,video/*" class="hidden"></label>
+      <button id="postBtn" class="btn brand px-6" data-act="post">Post</button>
+    </div></div>
+  <div id="posts" class="space-y-4"></div><div id="empty" class="card mute hidden p-10 text-center">Nothing here yet. Share the first post.</div>`;
+  $("#file").onchange = e => {
+    draftFile = e.target.files[0] || null;
+    if (draftFile && draftFile.size > 300 * 1024 * 1024) { toast("Keep files under 300 MB."); draftFile = null; }
+    const u = draftFile && URL.createObjectURL(draftFile);
+    $("#prev").innerHTML = !draftFile ? "" : `<div class="relative overflow-hidden rounded-2xl">${draftFile.type.startsWith("video") ? `<video src="${u}" controls class="max-h-72 w-full bg-black"></video>` : `<img src="${u}" alt="Preview" class="max-h-72 w-full object-cover">`}<button class="btn absolute right-2 top-2 !p-2" style="background:var(--surface)" data-act="rmfile" aria-label="Remove file">${ic("x")}</button></div>${draftFile.type.startsWith("video") ? `<label class="mt-2 flex items-center gap-2 text-sm font-semibold"><input type="checkbox" id="asReel"> Post as a Reel (short vertical video)</label>` : ""}`;
   };
-
-  function updateSticker() {
-    const item = document.getElementById('itemSelect').value;
-    const size = document.getElementById('sizeSelect').value;
-    const price = document.getElementById('priceInput').value || '0';
-    const custName = document.getElementById('custName').value.trim();
-    const custAddr = document.getElementById('custAddress').value.trim();
-    const codeType = document.getElementById('codeType').value;
-
-    document.getElementById('lblItem').innerText = item;
-    document.getElementById('lblSize').innerText = size;
-    document.getElementById('lblPrice').innerText = 'PRICE: ৳ ' + price;
-
-    const custBox = document.getElementById('custBox');
-    if (custName !== "" || custAddr !== "") {
-      custBox.style.display = "block";
-      document.getElementById('lblCustName').innerText = custName ? "Cust: " + custName : "";
-      document.getElementById('lblCustAddr').innerText = custAddr ? custAddr : "";
-    } else {
-      custBox.style.display = "none";
-    }
-
-    const invCode = document.getElementById('invNum').value;
-    if (codeType === "BARCODE") {
-      document.getElementById('barcode').style.display = "block";
-      document.getElementById('qrcode').style.display = "none";
-      JsBarcode("#barcode", invCode, {
-        format: "CODE128",
-        height: 25,
-        fontSize: 8,
-        margin: 1
-      });
-    } else {
-      document.getElementById('barcode').style.display = "none";
-      const qrContainer = document.getElementById('qrcode');
-      qrContainer.style.display = "flex";
-      qrContainer.innerHTML = "";
-      new QRCode(qrContainer, {
-        text: invCode + " | " + item + " | " + price,
-        width: 40,
-        height: 40
+}
+const shell = p => `<div class="flex items-center gap-3 p-4 pb-2">${av(p.name, 42)}<div class="min-w-0 flex-1"><b class="block truncate">${esc(p.name)}</b><span class="mute text-[13px]" data-t></span></div>${p.uid === me.uid ? `<button class="btn ghost !p-2 text-lg" data-act="del" aria-label="Delete post">${ic("x")}</button>` : ""}</div>
+  ${p.text ? `<p class="whitespace-pre-wrap px-4 pb-3 leading-relaxed">${esc(p.text)}</p>` : ""}
+  ${p.mediaURL ? (p.mediaType === "video" ? `<video src="${esc(p.mediaURL)}" controls playsinline preload="metadata" class="max-h-[600px] w-full bg-black"></video>` : `<img src="${esc(p.mediaURL)}" alt="" loading="lazy" class="max-h-[600px] w-full object-cover">`) : ""}
+  <div class="mute px-4 py-3 text-[13px]" data-n></div>
+  <div class="flex gap-1 px-3 pb-3"><div class="rw relative flex flex-1"><div class="rp" role="menu" aria-label="Reactions">${Object.entries(RX).map(([k, v]) => `<button type="button" data-act="react" data-r="${k}" title="${v[1]}" aria-label="${v[1]}">${v[0]}</button>`).join("")}</div><button class="act" data-act="like"><span class="flex text-xl" data-ri>${ic("like")}</span><span data-rl>Like</span></button></div><button class="act" data-act="fc"><span class="flex text-xl">${ic("comment")}</span>Comment</button><button class="act" data-act="share"><span class="flex text-xl">${ic("share")}</span>Share</button><button class="act" data-act="tip"><span class="flex text-xl">${ic("coin")}</span>Tip</button></div>
+  <div class="cl space-y-2 px-4"></div>
+  <div class="flex items-center gap-2 p-4 pt-2">${av(me.name, 32)}<input class="field flex-1" data-comment placeholder="Write a comment" aria-label="Write a comment"></div>`;
+const RX = { like: ["👍", "Like", "#1877f2"], love: ["❤️", "Love", "#f33e58"], care: ["🥰", "Care", "#f7b125"], haha: ["😆", "Haha", "#f7b125"], wow: ["😮", "Wow", "#f7b125"], sad: ["😢", "Sad", "#f7b125"], angry: ["😡", "Angry", "#e9710f"] };
+const mine = p => p.reacts?.[me.uid] || ((p.likes || []).includes(me.uid) ? "like" : null);
+const tally = p => { const c = {}; (p.likes || []).forEach(u => { if (!p.reacts?.[u]) c.like = (c.like || 0) + 1; }); Object.values(p.reacts || {}).forEach(t => { if (RX[t]) c[t] = (c[t] || 0) + 1; }); return c; };
+function upd(el, p) {
+  const r = mine(p), btn = el.querySelector('[data-act="like"]'), c = tally(p), tot = Object.values(c).reduce((a, x) => a + x, 0);
+  btn.classList.toggle("on", !!r); btn.setAttribute("aria-pressed", !!r); btn.style.color = r ? RX[r][2] : "";
+  el.querySelector("[data-ri]").innerHTML = r ? `<span class="text-xl leading-none">${RX[r][0]}</span>` : ic("like");
+  el.querySelector("[data-rl]").textContent = r ? RX[r][1] : "Like";
+  el.querySelector("[data-n]").innerHTML = (tot ? `<span class="inline-flex align-middle">${Object.keys(c).sort((x, y) => c[y] - c[x]).slice(0, 3).map(k => `<span class="-mr-0.5 rounded-full text-base leading-none">${RX[k][0]}</span>`).join("")}</span> <b>${tot}</b> · ` : "") + `${p.tips || 0} tips`;
+  el.querySelector("[data-t]").textContent = ago(p.createdAt?.toMillis?.() ?? Date.now());
+}
+function syncFeed() {
+  const box = $("#posts"); if (!box) return;
+  const vis = posts.filter(p => !q || (p.text + p.name).toLowerCase().includes(q));
+  [...box.children].forEach(el => { if (!vis.some(p => p.id === el.dataset.post)) { cUnsubs[el.dataset.post]?.(); delete cUnsubs[el.dataset.post]; el.remove(); } });
+  vis.forEach((p, i) => {
+    let el = box.querySelector(`[data-post="${p.id}"]`);
+    if (!el) {
+      el = document.createElement("article"); el.className = "card overflow-hidden"; el.dataset.post = p.id; el.innerHTML = shell(p);
+      cUnsubs[p.id] = onSnapshot(query(collection(db, "posts", p.id, "comments"), orderBy("createdAt", "asc"), limit(30)), s => {
+        el.querySelector(".cl").innerHTML = s.docs.map(d => d.data()).map(c => `<div class="flex gap-2">${av(c.name, 32)}<div class="rounded-2xl px-3 py-2 text-[14px]" style="background:var(--soft)"><b class="block text-[13px]">${esc(c.name)}</b>${esc(c.text)}</div></div>`).join("");
       });
     }
-  }
+    upd(el, p);
+    if (box.children[i] !== el) box.insertBefore(el, box.children[i] || null);
+  });
+  $("#empty").classList.toggle("hidden", vis.length > 0);
+}
+function syncVideos() {
+  const vs = posts.filter(p => p.mediaType === "video"), key = vs.map(v => v.id + (v.kind || "")).join();
+  if (key === vidKey) return; vidKey = key;
+  const none = t => `<div class="card mute p-10 text-center">${t}</div>`, rl = vs.filter(v => v.kind === "reel"), wl = vs.filter(v => v.kind !== "reel");
+  $("#view-reels").innerHTML = rl.length ? `<div class="snap">${rl.map(v => `<div><video src="${esc(v.mediaURL)}" controls muted loop playsinline preload="metadata" class="h-full w-full object-contain"></video><div class="pointer-events-none absolute left-0 right-0 top-0 p-4 text-white" style="background:linear-gradient(rgba(0,0,0,.55),transparent)"><b>${esc(v.name)}</b><div class="text-sm opacity-90">${esc(v.text || "")}</div></div></div>`).join("")}</div>` : none("No reels yet. Upload a video from Home and tick “Post as a Reel”.");
+  $("#view-watch").innerHTML = `<h2 class="mb-3 text-2xl font-extrabold">Watch</h2>` + (wl.length ? `<div class="grid gap-4 sm:grid-cols-2">${wl.map(v => `<div class="card overflow-hidden"><video src="${esc(v.mediaURL)}" controls preload="metadata" class="aspect-video w-full bg-black"></video><div class="p-3"><b class="block truncate">${esc(v.text || "Untitled video")}</b><span class="mute text-sm">${esc(v.name)}</span></div></div>`).join("")}</div>` : none("No videos yet. Upload one from Home."));
+  reelObs?.disconnect(); reelObs = new IntersectionObserver(es => es.forEach(e => e.isIntersecting ? e.target.play().catch(() => {}) : e.target.pause()), { threshold: .7 });
+  document.querySelectorAll("#view-reels video").forEach(v => reelObs.observe(v));
+}
+function renderShop() {
+  $("#view-shop").innerHTML = `<div class="mb-3 flex items-center justify-between"><h2 class="text-2xl font-extrabold">Shop</h2><span class="btn" style="background:var(--soft)">Cart <b id="cartN">${cart}</b></span></div><div class="grid grid-cols-2 gap-4 sm:grid-cols-4">${SHOP.map(p => `<div class="card overflow-hidden"><div class="h-36" style="background:linear-gradient(135deg,${p[2]})"></div><div class="p-3"><b class="block truncate">${p[0]}</b><span class="mute text-sm">$${p[1]}</span><button class="btn brand mt-2 w-full" data-act="cart">Add to cart</button></div></div>`).join("")}</div>`;
+}
 
-  function toggleCodeType() {
-    updateSticker();
-  }
+/* ---------- chat (Firestore realtime) ---------- */
+function openChat(uid) {
+  const peer = people.find(p => p.uid === uid); if (!peer || chats.some(c => c.uid === uid)) return focusChat(uid);
+  if (chats.length === 2) { chats[0].unsub(); chats.shift(); }
+  const id = [me.uid, uid].sort().join("_"), c = { uid, id, peer };
+  c.unsub = onSnapshot(query(collection(db, "chats", id, "messages"), orderBy("createdAt", "asc"), limit(60)), s => {
+    const l = $("#log-" + id); if (!l) return;
+    l.innerHTML = s.docs.map(d => d.data()).map(m => `<div class="flex ${m.from === me.uid ? "justify-end" : ""}"><span class="max-w-[78%] rounded-2xl px-3 py-1.5" style="${m.from === me.uid ? "background:var(--brand);color:var(--on-brand)" : "background:var(--soft)"}">${esc(m.text)}</span></div>`).join("") || `<p class="mute text-center text-sm">Say hi to ${esc(peer.name.split(" ")[0])}.</p>`;
+    l.scrollTop = l.scrollHeight;
+  }, e => toast("Chat error: " + e.code));
+  chats.push(c); drawChats(); focusChat(uid);
+}
+const focusChat = uid => { const c = chats.find(x => x.uid === uid); c && document.querySelector(`[data-chat="${c.id}"] input`)?.focus(); };
+function drawChats() {
+  $("#chats").innerHTML = chats.map(c => `<div class="chat card flex flex-col overflow-hidden !rounded-b-none" data-chat="${c.id}"><div class="flex items-center gap-2 p-3" style="border-bottom:1px solid var(--line)">${av(c.peer.name, 32)}<b class="flex-1 truncate">${esc(c.peer.name)}</b><button class="btn ghost !p-2 text-lg" data-act="closechat" aria-label="Close chat">${ic("x")}</button></div><div id="log-${c.id}" class="flex-1 space-y-1.5 overflow-y-auto p-3 text-[14px]"></div><div class="flex items-center gap-2 p-2"><input class="field flex-1" placeholder="Message" aria-label="Message ${esc(c.peer.name)}" data-ci><button class="btn brand !px-3 text-lg" data-act="sendchat" aria-label="Send">${ic("send")}</button></div></div>`).join("");
+  chats.forEach(c => c.unsub()); chats.forEach(c => { const peer = c.peer, id = c.id; c.unsub = onSnapshot(query(collection(db, "chats", id, "messages"), orderBy("createdAt", "asc"), limit(60)), s => {
+    const l = $("#log-" + id); if (!l) return;
+    l.innerHTML = s.docs.map(d => d.data()).map(m => `<div class="flex ${m.from === me.uid ? "justify-end" : ""}"><span class="max-w-[78%] rounded-2xl px-3 py-1.5" style="${m.from === me.uid ? "background:var(--brand);color:var(--on-brand)" : "background:var(--soft)"}">${esc(m.text)}</span></div>`).join("") || `<p class="mute text-center text-sm">Say hi to ${esc(peer.name.split(" ")[0])}.</p>`;
+    l.scrollTop = l.scrollHeight; }); });
+}
+async function sendChat(box) {
+  const i = box.querySelector("[data-ci]"), t = i.value.trim(); if (!t) return; i.value = "";
+  try { await addDoc(collection(db, "chats", box.dataset.chat, "messages"), { from: me.uid, text: t, createdAt: serverTimestamp() }); } catch (e) { toast("Message not sent: " + e.code); }
+}
 
-  function triggerPrint() {
-    const qty = parseInt(document.getElementById('printQty').value) || 1;
-    const printArea = document.getElementById('printArea');
-    printArea.innerHTML = "";
-    printArea.style.display = "block";
-
-    const baseSticker = document.getElementById('stickerPreview');
-    let historyRecords = JSON.parse(localStorage.getItem('bena_history') || '[]');
-
-    for (let i = 0; i < qty; i++) {
-      const clone = baseSticker.cloneNode(true);
-      const invStr = "INV-" + String(currentSerial).padStart(4, '0');
-      clone.querySelector('#lblInv').innerText = invStr;
-      
-      const codeType = document.getElementById('codeType').value;
-      if(codeType === "BARCODE") {
-        const barcodeSvg = clone.querySelector('#barcode');
-        JsBarcode(barcodeSvg, invStr, { format: "CODE128", height: 25, fontSize: 8, margin: 1 });
-      }
-      
-      printArea.appendChild(clone);
-
-      historyRecords.unshift({
-        inv: invStr,
-        item: document.getElementById('itemSelect').value,
-        size: document.getElementById('sizeSelect').value,
-        price: document.getElementById('priceInput').value,
-        date: new Date().getTime()
-      });
-
-      currentSerial++;
+/* ---------- events ---------- */
+document.addEventListener("click", async e => {
+  const b = e.target.closest("[data-act]"); if (!b) return;
+  const a = b.dataset.act, el = b.closest("[data-post]"), id = el?.dataset.post, p = posts.find(x => x.id === id);
+  try {
+    if (a === "like" || a === "react") { if (a === "like" && Date.now() - lpAt < 700) return; const t = a === "react" ? b.dataset.r : "like", cur = mine(p), del = a === "like" ? !!cur : cur === t; await updateDoc(doc(db, "posts", id), { [`reacts.${me.uid}`]: del ? deleteField() : t, likes: arrayRemove(me.uid) }); el.querySelector(".rp").classList.remove("open"); }
+    else if (a === "fc") el.querySelector("[data-comment]").focus();
+    else if (a === "share") { navigator.clipboard?.writeText(location.href).catch(() => {}); toast("Link copied"); }
+    else if (a === "tip") { if (p.uid === me.uid) return toast("You can’t tip your own post."); await updateDoc(doc(db, "posts", id), { tips: increment(1) }); toast("Tip sent"); }
+    else if (a === "del") { if (confirm("Delete this post?")) await deleteDoc(doc(db, "posts", id)); }
+    else if (a === "rmfile") { draftFile = null; $("#file").value = ""; $("#prev").innerHTML = ""; }
+    else if (a === "post") {
+      const text = $("#draft").value.trim(); if (!text && !draftFile) return toast("Write something or add a photo first.");
+      b.disabled = true; let m = {};
+      if (draftFile) { b.textContent = "Uploading 0%"; m = await Media.upload(draftFile, f => b.textContent = `Uploading ${Math.round(f * 100)}%`); }
+      await addDoc(collection(db, "posts"), { uid: me.uid, name: me.name, text, mediaURL: m.url || null, mediaType: m.type || null, reacts: {}, kind: m.type === "video" ? ($("#asReel")?.checked ? "reel" : "video") : null, tips: 0, createdAt: serverTimestamp() });
+      $("#draft").value = ""; draftFile = null; $("#file").value = ""; $("#prev").innerHTML = ""; b.disabled = false; b.textContent = "Post"; toast("Posted");
     }
-
-    localStorage.setItem('bena_history', JSON.stringify(historyRecords));
-    localStorage.setItem('bena_last_serial', currentSerial);
-
-    document.getElementById('invNum').value = "INV-" + String(currentSerial).padStart(4, '0');
-    document.getElementById('lblInv').innerText = document.getElementById('invNum').value;
-    
-    window.print();
-
-    setTimeout(() => {
-      printArea.style.display = "none";
-      updateSticker();
-    }, 500);
+    else if (a === "chat") openChat(b.dataset.uid);
+    else if (a === "closechat") { const id2 = b.closest("[data-chat]").dataset.chat; const c = chats.find(x => x.id === id2); c.unsub(); chats = chats.filter(x => x !== c); drawChats(); }
+    else if (a === "sendchat") sendChat(b.closest("[data-chat]"));
+    else if (a === "cart") { cart++; $("#cartN").textContent = cart; toast("Added to cart"); }
+    else if (a === "theme") { const r = document.documentElement, dark = getComputedStyle(r).getPropertyValue("--bg").trim() === "#18191a"; r.dataset.theme = dark ? "light" : "dark"; }
+    else if (a === "logout") await signOut(auth);
+    else if (a === "soon") toast("Notifications arrive in the next update.");
+  } catch (err) { toast("Something went wrong: " + (err.code || err.message)); const pb = $("#postBtn"); if (pb) { pb.disabled = false; pb.textContent = "Post"; } }
+});
+document.addEventListener("keydown", async e => {
+  if (e.key !== "Enter") return;
+  if (e.target.matches("[data-ci]")) sendChat(e.target.closest("[data-chat]"));
+  else if (e.target.matches("[data-comment]")) {
+    const t = e.target.value.trim(); if (!t) return; e.target.value = "";
+    try { await addDoc(collection(db, "posts", e.target.closest("[data-post]").dataset.post, "comments"), { uid: me.uid, name: me.name, text: t, createdAt: serverTimestamp() }); } catch (x) { toast("Comment not sent: " + x.code); }
   }
-
-  function resetSerial() {
-    currentSerial = 1;
-    localStorage.setItem('bena_last_serial', currentSerial);
-    document.getElementById('invNum').value = "INV-0001";
-    document.getElementById('lblInv').innerText = "INV-0001";
-    updateSticker();
-  }
-
-  function openHistoryModal() {
-    const modal = document.getElementById('historyModal');
-    const listContainer = document.getElementById('historyList');
-    listContainer.innerHTML = "";
-
-    const historyRecords = JSON.parse(localStorage.getItem('bena_history') || '[]');
-
-    if(historyRecords.length === 0) {
-      listContainer.innerHTML = "<p style='text-align:center; color:#64748b; padding:20px;'>কোনো হিস্টরি পাওয়া যায়নি।</p>";
-    } else {
-      historyRecords.forEach(rec => {
-        const dateStr = new Date(rec.date).toLocaleString('en-GB');
-        const div = document.createElement('div');
-        div.className = 'history-item';
-        div.innerHTML = `
-          <div>
-            <strong>${rec.inv}</strong> - ${rec.item} (${rec.size})
-            <br><small style="color:#64748b;">মূল্য: ৳${rec.price} | তারিখ: ${dateStr}</small>
-          </div>
-        `;
-        listContainer.appendChild(div);
-      });
-    }
-
-    modal.style.display = 'flex';
-  }
-
-  function closeHistoryModal() {
-    playSound();
-    document.getElementById('historyModal').style.display = 'none';
-  }
-
-  function cleanOldHistory() {
-    let historyRecords = JSON.parse(localStorage.getItem('bena_history') || '[]');
-    const sevenDaysAgo = new Date().getTime() - (7 * 24 * 60 * 60 * 1000);
-    historyRecords = historyRecords.filter(rec => rec.date >= sevenDaysAgo);
-    localStorage.setItem('bena_history', JSON.stringify(historyRecords));
-  }
+});
+document.addEventListener("touchstart", e => { const w = e.target.closest(".rw"); document.querySelectorAll(".rp.open").forEach(x => x.parentElement !== w && x.classList.remove("open")); if (w) { clearTimeout(lpT); lpT = setTimeout(() => { w.querySelector(".rp").classList.add("open"); lpAt = Date.now(); }, 400); } }, { passive: true });
+["touchend", "touchmove"].forEach(n => document.addEventListener(n, () => clearTimeout(lpT)));
+document.addEventListener("contextmenu", e => e.target.closest(".rw") && e.preventDefault());
+$("#search").addEventListener("input", e => { q = e.target.value.toLowerCase(); if (tab !== "feed") location.hash = "feed"; syncFeed(); });
 </script>
-
 </body>
 </html>
